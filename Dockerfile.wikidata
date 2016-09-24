@@ -1,0 +1,40 @@
+#
+#
+# docker build --rm -t wikidata .
+# docker run --name wikidata -t -i -p 9999:9999 -v /home/cyrille/Code/dev/nomsDesRues/WikiData/volume:/opt/wikidata wikidata:latest
+# docker start -i wikidata
+#
+
+FROM debian:jessie
+
+MAINTAINER cyrille@giquello.fr
+
+RUN export DEBIAN_FRONTEND=noninteractive \
+	&& set -x \
+	&& echo deb http://httpredir.debian.org/debian jessie-backports main >> /etc/apt/sources.list \
+	&& echo deb http://httpredir.debian.org/debian jessie contrib non-free >> /etc/apt/sources.list \
+	&& echo deb http://httpredir.debian.org/debian jessie-updates contrib non-free >> /etc/apt/sources.list \
+	&& apt-get update \
+	&& apt-get upgrade \
+	&& apt-get install -y \
+		apt-utils \
+		apt-transport-https \
+		software-properties-common \
+		lsb-release \
+		ca-certificates \
+		net-tools \
+		vim \
+	&& apt-get install -y \
+		openjdk-8-jdk-headless \
+		maven \
+		git \
+		wget \
+		curl \
+	&& apt-get autoremove -y -f \
+	&& apt-get clean -y
+
+RUN mkdir /opt/wikidata
+VOLUME /opt/wikidata
+
+EXPOSE 9999
+
