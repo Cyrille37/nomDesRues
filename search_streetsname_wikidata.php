@@ -83,7 +83,6 @@ $stats = [
 $sql = 'SELECT * FROM streetsshortnames WHERE search_done=0';
 foreach( $db->query($sql) as $row )
 {
-  $db->exec('BEGIN TRANSACTION');
 
   $stats['shortnames_count']++ ;
 
@@ -102,11 +101,14 @@ foreach( $db->query($sql) as $row )
   {
     echo 'ERROR: HTTP failed, skip', "\n";
     $stats['http_failed'] ++ ;
+    sleep(30);
     continue ;
   }
 
   $stats['wd_query_time'] += (microtime(true) - $ts) ;
   $stats['wd_query_count'] ++ ;
+
+  $db->exec('BEGIN TRANSACTION');
 
   $found = process_result( $db, $shortname_id, $result );
 
@@ -126,7 +128,7 @@ foreach( $db->query($sql) as $row )
 //if( $stats['shortnames_count'] == 100 )
 //  break;//DEBUG
 //else
-  sleep(8);
+  sleep(5);
 }
 
 echo "\n",'=================================',"\n";
