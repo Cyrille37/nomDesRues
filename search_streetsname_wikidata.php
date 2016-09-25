@@ -93,7 +93,7 @@ foreach( $db->query($sql) as $row )
   //$shortname='Beauregard';
   //$shortname='Albert Einstein';
 
-  echo str_pad( $stats['shortnames_count'], 7, '0', STR_PAD_LEFT),' ', $shortname, "\n";
+  echo date('c'), ' ', str_pad( $stats['shortnames_count'], 7, '0', STR_PAD_LEFT),' ', $shortname, "\n";
 
   $ts = microtime(true);
   $result = search( $shortname );
@@ -149,36 +149,40 @@ function search( $short_name )
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX wd: <http://www.wikidata.org/entity/>
     PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+  	PREFIX wikibase: <http://wikiba.se/ontology#>
+  	PREFIX bd: <http://www.bigdata.com/rdf#>
     SELECT ?item ?label ?nature ?natureLabel ?genre ?genreLabel WHERE {
-      ?item  rdfs:label "'.$short_name.'"@fr .
+      #?item  rdfs:label "'.$short_name.'"@fr .
       ?item  rdfs:label  ?label .
       FILTER(lang(?label)="fr") .
+      FILTER(STRENDS(?label, "'.$short_name.'")) .
       ?item wdt:P31 ?nature .
       ?nature rdfs:label ?natureLabel .
       FILTER(lang(?natureLabel)="fr") .
       OPTIONAL
       {
       	?item wdt:P21 ?genre .
-      	?genre rdfs:label ?genreLabel
+      	?genre rdfs:label ?genreLabel .
       	FILTER(lang(?genreLabel)="fr") .
       }
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "fr" }
     }
-    ORDER BY ?item
-    LIMIT 20
+    #ORDER BY ?item
+    LIMIT 10
   ';
   //echo $query, "\n";
 
-  $opts = array('http' =>
-      array(
-          'method'  => 'GET',
-          'header'  => 'Accept: application/sparql-results+json',
-      )
-  );
-  $context = stream_context_create($opts);
 
   $url = WIKI_DATA_URL.'?query='. urlencode($query);
   //echo $url, "\n";
 
+  $context = stream_context_create(array(
+    'http' =>
+      array(
+        'method'  => 'GET',
+        'header'  => 'Accept: application/sparql-results+json',
+    )
+  ));
   $result = file_get_contents( $url, false, $context);
 
   /*
@@ -203,6 +207,9 @@ $cache=[
   'wds' => []
 ];
 
+/**
+ *
+ */
 function process_result( $db, $shortname_id, &$resultString )
 {
   global $cache ;
@@ -266,6 +273,9 @@ function process_result( $db, $shortname_id, &$resultString )
   return true ;
 }
 
+/**
+ *
+ */
 function getNatureId( $db, $label )
 {
   $sth = $db->query('SELECT id FROM natures WHERE label="'.$label.'"');

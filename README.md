@@ -2,6 +2,8 @@
 
 Déterminer le genre et la thématique des noms des rues d'une ville.
 
+La zonmai du projet : https://github.com/Cyrille37/nomDesRues
+
 - genre: Féminin / Masculin
 - type: humain, lieu, événement, ...
 - thématique: poëte, ingénieur, politicien, ...
@@ -61,6 +63,7 @@ Les colonnes:
 
 - SPARQL
  - [Le tutoriel SPARQL](http://web-semantique.developpez.com/tutoriels/jena/arq/introduction-sparql/)
+ - [Wikidata:SPARQL query service/queries/examples](https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service/queries/examples)
 - WikiData
  - [Deploy standalone service](https://www.mediawiki.org/wiki/Wikidata_query_service/User_Manual#Standalone_service)
  - [Getting Started](https://github.com/wikimedia/wikidata-query-rdf/blob/master/docs/getting-started.md)
